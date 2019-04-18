@@ -12,6 +12,7 @@ import "./styles.css";
 function App() {
   const [theme, changeTheme] = useState("dark");
   const [label, updateLabel] = useState("light mode");
+  const [age, changeAge] = useState(99);
   // useContext hook
   const ThemeContext = React.createContext(theme);
 
@@ -24,6 +25,8 @@ function App() {
     );
   }
 
+  const growOld = () => changeAge(prevAge => prevAge + 1);
+
   useEffect(() => {
     const newMode = theme === "dark" ? "light" : "dark";
     updateLabel(newMode);
@@ -31,6 +34,9 @@ function App() {
 
   return (
     <div className={`App ${theme}`}>
+      <p>I am {age} years old</p>
+      <button onClick={growOld}>Grow old</button>
+      <br />
       <Button label={label} changeTheme={changeTheme} />
       <br />
       <br />
