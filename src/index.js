@@ -1,26 +1,45 @@
-import React, { useContext, useRef } from "react";
+import React, {
+  useContext,
+  useRef,
+  useReducer,
+  useState,
+  useEffect
+} from "react";
 import ReactDOM from "react-dom";
 
 import "./styles.css";
 
 function App() {
+  const [theme, changeTheme] = useState("dark");
+  const [label, updateLabel] = useState("light mode");
+  // useContext hook
+  const ThemeContext = React.createContext(theme);
+
+  function Button({ label, changeTheme }) {
+    const theme = useContext(ThemeContext);
+    return (
+      <button className={theme} onClick={() => changeTheme(label)}>
+        {label} mode
+      </button>
+    );
+  }
+
+  useEffect(() => {
+    const newMode = theme === "dark" ? "light" : "dark";
+    updateLabel(newMode);
+  }, [theme]);
+
   return (
-    <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>Start editing to see some magic happen!</h2>
-      <Button />
+    <div className={`App ${theme}`}>
+      <Button label={label} changeTheme={changeTheme} />
+      <br />
       <br />
       <TextInputWithFocusButton />
+      <br />
+      <br />
+      <Bar />
     </div>
   );
-}
-
-// useContext hook
-const ThemeContext = React.createContext("light");
-
-function Button() {
-  const theme = useContext(ThemeContext);
-  return <button className={theme}>Amazing button</button>;
 }
 
 // useRef hook
@@ -38,6 +57,34 @@ function TextInputWithFocusButton() {
     </>
   );
 }
+
+// useReducer hook
+const initialState = { width: 15 };
+const reducer = (state, action) => {
+  switch (action) {
+    case "plus":
+      return { width: state.width + 15 };
+    case "minus":
+      return { width: Math.max(state.width - 15, 10) };
+    default:
+      throw new Error("what's going on?");
+  }
+};
+
+const Bar = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return (
+    <>
+      <div
+        style={{ background: "papayawhip", height: "30px", width: state.width }}
+      />
+      <div style={{ marginTop: "3rem" }}>
+        <button onClick={() => dispatch("plus")}>Increase bar size</button>
+        <button onClick={() => dispatch("minus")}>Decrease bar size</button>
+      </div>
+    </>
+  );
+};
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(<App />, rootElement);
